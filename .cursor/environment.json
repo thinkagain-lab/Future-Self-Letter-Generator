@@ -1,0 +1,10 @@
+{
+  "name": "Future-Self Letter Generator",
+  "install": "npm install",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "npm run dev"
+    }
+  ]
+}
