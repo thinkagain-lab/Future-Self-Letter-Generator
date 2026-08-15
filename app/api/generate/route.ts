@@ -49,17 +49,6 @@ function parseInput(body: unknown): LetterInput | { error: string } {
 }
 
 export async function POST(request: Request) {
-  const rate = checkRateLimit(clientKeyFromHeaders(request.headers));
-  if (!rate.allowed) {
-    return NextResponse.json(
-      {
-        error:
-          "You've reached the free limit of 2 letters per day. Please come back tomorrow.",
-      },
-      { status: 429 },
-    );
-  }
-
   let body: unknown;
   try {
     body = await request.json();
@@ -73,6 +62,18 @@ export async function POST(request: Request) {
   }
 
   const input = parsed;
+
+  // Only count valid generation attempts against the free daily quota.
+  const rate = checkRateLimit(clientKeyFromHeaders(request.headers));
+  if (!rate.allowed) {
+    return NextResponse.json(
+      {
+        error:
+          "You've reached the free limit of 2 letters per day. Please come back tomorrow.",
+      },
+      { status: 429 },
+    );
+  }
 
   try {
     if (hasGroqKey()) {
